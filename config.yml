@@ -3,12 +3,5 @@ logging:
   loggers:
     joshsurette: DEBUG
 
-projects:
-  - name: "EMR Standardization"
-    image: "https://cdn-images-1.medium.com/max/1600/1*8-NNHZhRVb5EPHK5iin92Q.png"
-    description: "For my Junior year summer internship I worked as a Data Engineering intern at Optum in Boston with the largest healthcare database in the country. We established a pipeline to take data from various EMR formats to convert them into a CDR format ready for sale. I was part of the core effort to transfer existing SQL ETL code to a more scalable Hadoop/Spark framework."
-    languageList: ['Spark', 'Hadoop', 'Scala', 'SQL']
-  - name: "Metabolic Engineering"
-    image: "src/img/macbookpro15-front_1_orig.png"
-    description: "In my sophomore year internship, I was fortunate enough to be able to have worked with some of the smartest people I have ever met at Massachussetts General Hospital as a Software Engineering Research Intern. Here, I worked with a Chemical Engineering postdoc and renowned surgeons to help write algorithms in Python to locate specific metabolic pathways affected in liver transplants. The ultimate goal of this would be to develop drugs that target these specific pathways to create more viable livers for transplant, while reducing side effects. Here, I gained a lot of experience with handling massive data sets, and grew much more accustomed to Python and all of the great data science tools it offers."
-    languageList: ['Python', 'Pandas', 'MATLAB']
+elasticSearchHost: "http://localhost:9200"
+elasticSearchCluster: "personal_site"
