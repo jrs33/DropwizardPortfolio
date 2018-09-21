@@ -10,7 +10,11 @@ public class SuretteConfiguration extends Configuration {
     private String esHost;
 
     @NotEmpty
+    private String esPort;
+
+    @NotEmpty
     private String clusterName;
+
 
     @JsonProperty("elasticSearchHost")
     public String getEsHost() {
@@ -20,6 +24,16 @@ public class SuretteConfiguration extends Configuration {
     @JsonProperty("elasticSearchHost")
     public void setEsHost(String esHost) {
         this.esHost = esHost;
+    }
+
+    @JsonProperty("elasticSearchPort")
+    public String getEsPort() {
+        return esPort;
+    }
+
+    @JsonProperty("elasticSearchPort")
+    public void setEsPort(String esPort) {
+        this.esPort = esPort;
     }
 
     @JsonProperty("elasticSearchCluster")

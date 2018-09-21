@@ -1,13 +1,18 @@
 package com.site.joshsurette;
 
+import com.site.joshsurette.utility.ElasticSearchAdminUtility;
 import com.site.joshsurette.utility.ElasticSearchResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.apache.http.HttpHost;
 import org.apache.log4j.Logger;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 public class SuretteApplication extends Application<SuretteConfiguration> {
-    private static final Logger logger = Logger.getLogger(SuretteApplication.class);
+    private static final Logger LOGGER = Logger.getLogger(SuretteApplication.class);
+    private static final String PROTOCOL = "http";
 
     public static void main(final String[] args) throws Exception {
         new SuretteApplication().run(args);
@@ -24,7 +29,14 @@ public class SuretteApplication extends Application<SuretteConfiguration> {
     @Override
     public void run(final SuretteConfiguration configuration,
                     final Environment environment) {
-        final ElasticSearchResource elasticSearchResource = new ElasticSearchResource();
+
+        RestHighLevelClient client = new RestHighLevelClient(
+                RestClient.builder(
+                        new HttpHost(configuration.getEsHost(), Integer.valueOf(configuration.getEsPort()), PROTOCOL)
+                )
+        );
+        ElasticSearchAdminUtility elasticSearchAdminUtility = new ElasticSearchAdminUtility(client);
+        final ElasticSearchResource elasticSearchResource = new ElasticSearchResource(elasticSearchAdminUtility);
 
         environment.jersey().register(elasticSearchResource);
     }

@@ -3,5 +3,6 @@ logging:
   loggers:
     joshsurette: DEBUG
 
-elasticSearchHost: "http://localhost:9200"
+elasticSearchHost: "localhost"
+elasticSearchPort: 9200
 elasticSearchCluster: "personal_site"
