@@ -1,8 +1,10 @@
 logging:
   level: INFO
-  loggers:
-    joshsurette: DEBUG
+  appenders:
+    - type: file
+      currentLogFilename: ./logs/portfolio.log
+      archive: false
 
 elasticSearchHost: "localhost"
-elasticSearchPort: 9200
+elasticSearchPort: "9200"
 elasticSearchCluster: "personal_site"

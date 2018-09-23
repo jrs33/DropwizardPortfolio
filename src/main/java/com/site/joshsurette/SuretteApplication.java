@@ -6,13 +6,11 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.apache.http.HttpHost;
-import org.apache.log4j.Logger;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
 public class SuretteApplication extends Application<SuretteConfiguration> {
 
-    private static final Logger LOGGER = Logger.getLogger(SuretteApplication.class);
     private static final String PROTOCOL = "http";
 
     public static void main(final String[] args) throws Exception {
