@@ -20,7 +20,7 @@ public class ElasticSearchClient {
 
     public SearchResponse search(String[] indices) throws IOException {
         SearchRequest searchRequest = new SearchRequest(indices);
-        return restHighLevelClient.search(searchRequest);
+        return restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
     }
 
     public SearchResponse search(String[] indices, SearchSourceBuilder searchSourceBuilder) throws IOException {
