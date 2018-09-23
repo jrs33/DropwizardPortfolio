@@ -1,5 +1,6 @@
 package com.site.joshsurette.projects;
 
+import com.codahale.metrics.annotation.Timed;
 import com.site.joshsurette.core.ElasticSearchClient;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -25,7 +26,8 @@ public class ProjectsResource {
 
     static final String PROJECTS_PATH = "/projects/search";
 
-    private static final String[] projectsIndex = new String[] {"projects"};
+    private static final String PROJECTS = "projects";
+    private static final String[] projectsIndex = new String[] {PROJECTS};
 
     private final ElasticSearchClient searchClient;
 
@@ -36,6 +38,7 @@ public class ProjectsResource {
     }
 
     @Path("/name")
+    @Timed
     @GET
     public SearchResponse searchProjectsByName(
             @QueryParam("from") @DefaultValue("0") int from,
@@ -60,6 +63,7 @@ public class ProjectsResource {
     }
 
     @Path("/text")
+    @Timed
     @GET
     public SearchResponse searchProjectsByDescription(
             @QueryParam("from") @DefaultValue("0") int from,
