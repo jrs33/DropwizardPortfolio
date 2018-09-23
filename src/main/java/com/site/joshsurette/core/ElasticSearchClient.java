@@ -4,6 +4,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
@@ -18,19 +19,19 @@ public class ElasticSearchClient {
         this.restHighLevelClient = restHighLevelClient;
     }
 
-    public SearchResponse search(String[] indices) throws IOException {
+    public SearchHits search(String[] indices) throws IOException {
         SearchRequest searchRequest = new SearchRequest(indices);
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         restHighLevelClient.close();
 
-        return searchResponse;
+        return searchResponse.getHits();
     }
 
-    public SearchResponse search(String[] indices, SearchSourceBuilder searchSourceBuilder) throws IOException {
+    public SearchHits search(String[] indices, SearchSourceBuilder searchSourceBuilder) throws IOException {
         SearchRequest searchRequest = new SearchRequest(indices, searchSourceBuilder);
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         restHighLevelClient.close();
 
-        return searchResponse;
+        return searchResponse.getHits();
     }
 }

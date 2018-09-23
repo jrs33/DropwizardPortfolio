@@ -5,6 +5,7 @@ import com.site.joshsurette.core.ElasticSearchClient;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class ProjectsResource {
     @Path("/name")
     @Timed
     @GET
-    public SearchResponse searchProjectsByName(
+    public SearchHits searchProjectsByName(
             @QueryParam("from") @DefaultValue("0") int from,
             @QueryParam("size") @DefaultValue("10") int size,
             @QueryParam("sortField") @DefaultValue(Project.STARTED_DATE_FIELD) String sortField,
@@ -59,21 +60,21 @@ public class ProjectsResource {
         searchSourceBuilder.size(size);
         searchSourceBuilder.sort(sortField, sortOrder.isPresent() ? SortOrder.valueOf(sortOrder.get()) : SortOrder.DESC);
 
-        SearchResponse response;
+        SearchHits response;
         try {
             response = searchClient.search(projectsIndex, searchSourceBuilder);
         } catch (IOException e) {
             throw new WebApplicationException("error_searching_project_names", e);
         }
 
-        LOGGER.info(String.format("searching by name query %s yielded %d hits", queryBuilder.toString(), response.getHits().totalHits));
+        LOGGER.info(String.format("searching by name query %s yielded %d hits", queryBuilder.toString(), response.totalHits));
         return response;
     }
 
     @Path("/text")
     @Timed
     @GET
-    public SearchResponse searchProjectsByDescription(
+    public SearchHits searchProjectsByDescription(
             @QueryParam("from") @DefaultValue("0") int from,
             @QueryParam("size") @DefaultValue("10") int size,
             @QueryParam("sortField") @DefaultValue(Project.STARTED_DATE_FIELD) String sortField,
@@ -88,14 +89,14 @@ public class ProjectsResource {
         searchSourceBuilder.size(size);
         searchSourceBuilder.sort(sortField, sortOrder.isPresent() ? SortOrder.valueOf(sortOrder.get()) : SortOrder.DESC);
 
-        SearchResponse response;
+        SearchHits response;
         try {
             response = searchClient.search(projectsIndex, searchSourceBuilder);
         } catch (IOException e) {
             throw new WebApplicationException("error_searching_project_descriptions", e);
         }
-        
-        LOGGER.info(String.format("searching by text query %s yielded %d hits", queryBuilder.toString(), response.getHits().totalHits));
+
+        LOGGER.info(String.format("searching by text query %s yielded %d hits", queryBuilder.toString(), response.totalHits));
         return response;
     }
 }
