@@ -7,6 +7,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -25,6 +27,8 @@ import java.util.Optional;
 public class ProjectsResource {
 
     static final String PROJECTS_PATH = "/projects/search";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectsResource.class);
 
     private static final String PROJECTS = "projects";
     private static final String[] projectsIndex = new String[] {PROJECTS};
@@ -55,11 +59,15 @@ public class ProjectsResource {
         searchSourceBuilder.size(size);
         searchSourceBuilder.sort(sortField, sortOrder.isPresent() ? SortOrder.valueOf(sortOrder.get()) : SortOrder.DESC);
 
+        SearchResponse response;
         try {
-            return searchClient.search(projectsIndex, searchSourceBuilder);
+            response = searchClient.search(projectsIndex, searchSourceBuilder);
         } catch (IOException e) {
             throw new WebApplicationException("error_searching_project_names", e);
         }
+
+        LOGGER.info(String.format("searching by name query %s yielded %d hits", queryBuilder.toString(), response.getHits().totalHits));
+        return response;
     }
 
     @Path("/text")
@@ -80,10 +88,14 @@ public class ProjectsResource {
         searchSourceBuilder.size(size);
         searchSourceBuilder.sort(sortField, sortOrder.isPresent() ? SortOrder.valueOf(sortOrder.get()) : SortOrder.DESC);
 
+        SearchResponse response;
         try {
-            return searchClient.search(projectsIndex, searchSourceBuilder);
+            response = searchClient.search(projectsIndex, searchSourceBuilder);
         } catch (IOException e) {
             throw new WebApplicationException("error_searching_project_descriptions", e);
         }
+        
+        LOGGER.info(String.format("searching by text query %s yielded %d hits", queryBuilder.toString(), response.getHits().totalHits));
+        return response;
     }
 }
