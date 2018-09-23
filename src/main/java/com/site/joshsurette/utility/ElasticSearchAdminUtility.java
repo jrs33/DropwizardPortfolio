@@ -1,7 +1,9 @@
 package com.site.joshsurette.utility;
 
 import com.google.common.base.Throwables;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.client.Node;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
@@ -27,5 +29,13 @@ public class ElasticSearchAdminUtility {
         }
 
         return nodes;
+    }
+
+    public void createIndex(CreateIndexRequest createIndexRequest, RequestOptions options) {
+        try {
+            client.indices().create(createIndexRequest, options);
+        } catch (IOException e) {
+            // TODO: log here
+        }
     }
 }
