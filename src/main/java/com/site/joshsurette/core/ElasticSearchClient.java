@@ -20,11 +20,17 @@ public class ElasticSearchClient {
 
     public SearchResponse search(String[] indices) throws IOException {
         SearchRequest searchRequest = new SearchRequest(indices);
-        return restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        restHighLevelClient.close();
+
+        return searchResponse;
     }
 
     public SearchResponse search(String[] indices, SearchSourceBuilder searchSourceBuilder) throws IOException {
         SearchRequest searchRequest = new SearchRequest(indices, searchSourceBuilder);
-        return restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        restHighLevelClient.close();
+
+        return searchResponse;
     }
 }
