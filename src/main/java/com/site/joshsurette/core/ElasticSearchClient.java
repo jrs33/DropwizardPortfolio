@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class ElasticSearchClient {
 
@@ -24,30 +25,41 @@ public class ElasticSearchClient {
         this.restHighLevelClient = restHighLevelClient;
     }
 
-    public SearchHits search(final String[] indices) throws IOException {
+    public SearchHits search(final String[] indices) throws IOException, IllegalArgumentException {
+
         if(!isValidIndiceArgument(indices)) {
-            logger.error("invalid indices passed returning empty hits: " + indices);
-            return EMPTY_HITS;
+            throw new IllegalArgumentException("invalid indices passed returning empty hits");
         }
 
         SearchRequest searchRequest = new SearchRequest(indices);
-        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        restHighLevelClient.close();
-
-        return searchResponse.getHits();
+        return executeSearch(searchRequest);
     }
 
-    public SearchHits search(final String[] indices, final SearchSourceBuilder searchSourceBuilder) throws IOException {
+    public SearchHits search(
+            final String[] indices,
+            final SearchSourceBuilder searchSourceBuilder
+    ) throws IOException, IllegalArgumentException {
+
         if(!isValidIndiceArgument(indices)) {
-            logger.error("invalid indices passed returning empty hits: " + indices);
-            return EMPTY_HITS;
+            throw new IllegalArgumentException("invalid indices passed returning empty hits");
         }
 
         SearchRequest searchRequest = new SearchRequest(indices, searchSourceBuilder);
-        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        restHighLevelClient.close();
+        return executeSearch(searchRequest);
+    }
 
-        return searchResponse.getHits();
+    private SearchHits executeSearch(SearchRequest searchRequest) throws IOException {
+        try {
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            return Objects.nonNull(searchResponse) && Objects.nonNull(searchResponse.getHits()) ?
+                    searchResponse.getHits() :
+                    EMPTY_HITS;
+        } catch (Exception e) {
+            logger.error("unexpected exception thrown when executing search", e);
+        } finally {
+            restHighLevelClient.close();
+        }
+        return EMPTY_HITS;
     }
 
     private static boolean isValidIndiceArgument(final String[] indices) {
