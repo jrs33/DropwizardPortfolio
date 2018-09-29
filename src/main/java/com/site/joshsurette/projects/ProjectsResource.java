@@ -18,6 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -64,6 +65,8 @@ public class ProjectsResource {
             response = searchClient.search(projectsIndex, searchSourceBuilder);
         } catch (IOException e) {
             throw new WebApplicationException("error_searching_project_names", e);
+        } catch (IllegalArgumentException e) {
+            throw new WebApplicationException("unable to process input", Response.Status.BAD_REQUEST);
         }
 
         LOGGER.info(String.format("searching by name query %s yielded %d hits", queryBuilder.toString(), response.totalHits));
@@ -93,6 +96,8 @@ public class ProjectsResource {
             response = searchClient.search(projectsIndex, searchSourceBuilder);
         } catch (IOException e) {
             throw new WebApplicationException("error_searching_project_descriptions", e);
+        } catch (IllegalArgumentException e) {
+            throw new WebApplicationException("unable to process input", Response.Status.BAD_REQUEST);
         }
 
         LOGGER.info(String.format("searching by text query %s yielded %d hits", queryBuilder.toString(), response.totalHits));
