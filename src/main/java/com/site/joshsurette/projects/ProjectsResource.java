@@ -2,7 +2,6 @@ package com.site.joshsurette.projects;
 
 import com.codahale.metrics.annotation.Timed;
 import com.site.joshsurette.core.ElasticSearchClient;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
