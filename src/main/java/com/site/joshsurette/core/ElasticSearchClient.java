@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class ElasticSearchClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(ElasticSearchClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchClient.class);
     private static final SearchHits EMPTY_HITS = SearchHits.empty();
     private static final String PROJECT_TYPE = "_doc";
 
@@ -74,10 +74,9 @@ public class ElasticSearchClient {
                     searchResponse.getHits() :
                     EMPTY_HITS;
         } catch (Exception e) {
-            System.out.println("unexpected exception thrown when executing search: " + e.getStackTrace());
-        } finally {
-            restHighLevelClient.close();
+            LOGGER.error("unexpected exception thrown when executing search", e);
         }
+
         return EMPTY_HITS;
     }
 
@@ -85,10 +84,9 @@ public class ElasticSearchClient {
         try {
             return restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
-            System.out.println("unexpected exception thrown when indexing project: " + e.getStackTrace());
-        } finally {
-            restHighLevelClient.close();
+            LOGGER.error("unexpected exception thrown when indexing", e);
         }
+
         return new IndexResponse();
     }
 
