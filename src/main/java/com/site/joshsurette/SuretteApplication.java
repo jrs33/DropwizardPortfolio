@@ -1,5 +1,6 @@
 package com.site.joshsurette;
 
+import com.site.joshsurette.admin.AdminProjectsResource;
 import com.site.joshsurette.core.ElasticSearchClient;
 import com.site.joshsurette.projects.ProjectsResource;
 import io.dropwizard.Application;
@@ -34,9 +35,14 @@ public class SuretteApplication extends Application<SuretteConfiguration> {
                 )
         );
         ElasticSearchClient elasticSearchClient = new ElasticSearchClient(client);
-        ProjectsResource projectsResource = new ProjectsResource(elasticSearchClient);
 
+        // Creating Resources
+        ProjectsResource projectsResource = new ProjectsResource(elasticSearchClient);
+        AdminProjectsResource adminProjectsResource = new AdminProjectsResource(elasticSearchClient);
+
+        // Registering Resources
         environment.jersey().register(projectsResource);
+        environment.jersey().register(adminProjectsResource);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.site.joshsurette.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.site.joshsurette.projects.ImmutableProject;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -7,6 +8,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ public class ElasticSearchClient {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticSearchClient.class);
     private static final SearchHits EMPTY_HITS = SearchHits.empty();
+    private static final String PROJECT_TYPE = "_doc";
 
     private final RestHighLevelClient restHighLevelClient;
 
@@ -57,7 +60,10 @@ public class ElasticSearchClient {
             throw new IllegalArgumentException("invalid indices passed returning empty hits");
         }
 
-        IndexRequest indexRequest = new IndexRequest(index).source(project);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonProject = objectMapper.writeValueAsString(project);
+        IndexRequest indexRequest = new IndexRequest(index, PROJECT_TYPE).source(jsonProject, XContentType.JSON);
+
         return executeIndex(indexRequest);
     }
 
@@ -68,7 +74,7 @@ public class ElasticSearchClient {
                     searchResponse.getHits() :
                     EMPTY_HITS;
         } catch (Exception e) {
-            logger.error("unexpected exception thrown when executing search", e);
+            System.out.println("unexpected exception thrown when executing search: " + e.getStackTrace());
         } finally {
             restHighLevelClient.close();
         }
@@ -79,7 +85,7 @@ public class ElasticSearchClient {
         try {
             return restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
-            logger.error("unexpected exception thrown when indexing project", e);
+            System.out.println("unexpected exception thrown when indexing project: " + e.getStackTrace());
         } finally {
             restHighLevelClient.close();
         }
