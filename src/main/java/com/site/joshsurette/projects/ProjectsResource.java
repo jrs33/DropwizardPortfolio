@@ -1,6 +1,7 @@
 package com.site.joshsurette.projects;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Optional;
 import com.site.joshsurette.core.ElasticSearchClient;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -20,7 +21,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.Optional;
 
 @Path(ProjectsResource.PROJECTS_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,27 +50,28 @@ public class ProjectsResource {
             @QueryParam("size") @DefaultValue("10") int size,
             @QueryParam("sortField") @DefaultValue(Project.STARTED_DATE_FIELD) String sortField,
             @QueryParam("sortDirection") Optional<String> sortOrder,
-            @QueryParam("q") String name
+            @QueryParam("q") Optional<String> name
     ) {
-        QueryBuilder queryBuilder = QueryBuilders.matchPhrasePrefixQuery(Project.TITLE_FIELD, name);
-
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(queryBuilder);
+
+        if(name.isPresent()) {
+            QueryBuilder queryBuilder = QueryBuilders.matchPhrasePrefixQuery(Project.TITLE_FIELD, name.get());
+            LOGGER.info(String.format("searching by name with query %s", queryBuilder.toString()));
+
+            searchSourceBuilder.query(queryBuilder);
+        }
+
         searchSourceBuilder.from(from);
         searchSourceBuilder.size(size);
         searchSourceBuilder.sort(sortField, sortOrder.isPresent() ? SortOrder.valueOf(sortOrder.get()) : SortOrder.DESC);
 
-        SearchHits response;
         try {
-            response = searchClient.search(projectsIndex, searchSourceBuilder);
+            return searchClient.search(projectsIndex, searchSourceBuilder);
         } catch (IOException e) {
             throw new WebApplicationException("error_searching_project_names", e);
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException("unable to process input", Response.Status.BAD_REQUEST);
         }
-
-        LOGGER.info(String.format("searching by name query %s yielded %d hits", queryBuilder.toString(), response.totalHits));
-        return response;
     }
 
     @Path("/text")
@@ -81,26 +82,27 @@ public class ProjectsResource {
             @QueryParam("size") @DefaultValue("10") int size,
             @QueryParam("sortField") @DefaultValue(Project.STARTED_DATE_FIELD) String sortField,
             @QueryParam("sortDirection") Optional<String> sortOrder,
-            @QueryParam("q") String keywords
+            @QueryParam("q") Optional<String> keywords
     ) {
-        QueryBuilder queryBuilder = QueryBuilders.matchQuery(Project.DESCRIPTION_FIELD, keywords);
-
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(queryBuilder);
+
+        if(keywords.isPresent()) {
+            QueryBuilder queryBuilder = QueryBuilders.matchPhrasePrefixQuery(Project.DESCRIPTION_FIELD, keywords.get());
+            LOGGER.info(String.format("searching text with query %s", queryBuilder.toString()));
+
+            searchSourceBuilder.query(queryBuilder);
+        }
+
         searchSourceBuilder.from(from);
         searchSourceBuilder.size(size);
         searchSourceBuilder.sort(sortField, sortOrder.isPresent() ? SortOrder.valueOf(sortOrder.get()) : SortOrder.DESC);
 
-        SearchHits response;
         try {
-            response = searchClient.search(projectsIndex, searchSourceBuilder);
+            return searchClient.search(projectsIndex, searchSourceBuilder);
         } catch (IOException e) {
             throw new WebApplicationException("error_searching_project_descriptions", e);
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException("unable to process input", Response.Status.BAD_REQUEST);
         }
-
-        LOGGER.info(String.format("searching by text query %s yielded %d hits", queryBuilder.toString(), response.totalHits));
-        return response;
     }
 }
