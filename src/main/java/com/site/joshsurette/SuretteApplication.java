@@ -2,13 +2,18 @@ package com.site.joshsurette;
 
 import com.site.joshsurette.admin.AdminProjectsResource;
 import com.site.joshsurette.core.ElasticSearchClient;
+import com.site.joshsurette.core.servlets.CorsFilter;
 import com.site.joshsurette.projects.ProjectsResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.apache.http.HttpHost;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+
+import javax.servlet.DispatcherType;
+import java.util.EnumSet;
 
 public class SuretteApplication extends Application<SuretteConfiguration> {
 
@@ -43,6 +48,8 @@ public class SuretteApplication extends Application<SuretteConfiguration> {
         // Registering Resources
         environment.jersey().register(projectsResource);
         environment.jersey().register(adminProjectsResource);
-    }
 
+//        environment.servlets().addFilter("CORS", new CorsFilter())
+//                .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+    }
 }
