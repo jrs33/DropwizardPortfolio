@@ -13,6 +13,7 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import java.util.EnumSet;
 
 public class SuretteApplication extends Application<SuretteConfiguration> {
@@ -36,7 +37,7 @@ public class SuretteApplication extends Application<SuretteConfiguration> {
                     final Environment environment) {
         RestHighLevelClient client = new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost(configuration.getEsHost(), Integer.valueOf(configuration.getEsPort()), PROTOCOL)
+                        new HttpHost(configuration.getEsHost())
                 )
         );
         ElasticSearchClient elasticSearchClient = new ElasticSearchClient(client);
@@ -49,7 +50,8 @@ public class SuretteApplication extends Application<SuretteConfiguration> {
         environment.jersey().register(projectsResource);
         environment.jersey().register(adminProjectsResource);
 
-//        environment.servlets().addFilter("CORS", new CorsFilter())
-//                .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+        cors.setInitParameter("allowedOrigins", configuration.getAllowedOrigin());
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
     }
 }

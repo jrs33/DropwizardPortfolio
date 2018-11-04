@@ -6,6 +6,8 @@ server:
   - type: http
     port: 3334
 
-elasticSearchHost: "localhost"
+elasticSearchHost: ""
 elasticSearchPort: "9200"
 elasticSearchCluster: "personal_site"
+
+allowedOrigin:

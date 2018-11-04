@@ -15,6 +15,8 @@ public class SuretteConfiguration extends Configuration {
     @NotEmpty
     private String clusterName;
 
+    @NotEmpty
+    private String allowedOrigin;
 
     @JsonProperty("elasticSearchHost")
     public String getEsHost() {
@@ -46,4 +48,9 @@ public class SuretteConfiguration extends Configuration {
         this.clusterName = clusterName;
     }
 
+    @JsonProperty("allowedOrigin")
+    public String getAllowedOrigin() { return allowedOrigin; }
+
+    @JsonProperty("allowedOrigin")
+    public void setAllowedOrigin(String allowedOrigin) { this.allowedOrigin = allowedOrigin; }
 }
